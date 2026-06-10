@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史记录 - 开票待办助手</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <nav class="top-nav">
+            <div class="nav-brand">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    <path d="M9 14l2 2 4-4"/>
+                </svg>
+                <span class="nav-title">开票待办助手</span>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link">待办列表</a>
+                <a href="/history" class="nav-link active">历史记录</a>
+                <a href="/settings" class="nav-link">设置</a>
+            </div>
+        </nav>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 筛选栏 -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label class="filter-label">客户：</label>
+                    <select class="filter-select" id="customerFilter">
+                        <option value="">全部客户</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">业务月份：</label>
+                    <input type="month" class="filter-input" id="monthFilter">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">发送状态：</label>
+                    <select class="filter-select" id="sendStatusFilter">
+                        <option value="">全部</option>
+                        <option value="unsent">未发送</option>
+                        <option value="sent">已发送</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary" id="applyFilterBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                    </svg>
+                    应用筛选
+                </button>
+            </div>
+
+            <!-- 历史记录列表 -->
+            <div class="todo-table-container">
+                <table class="todo-table" id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>客户名</th>
+                            <th>业务月份</th>
+                            <th>金额</th>
+                            <th>发送状态</th>
+                            <th>发送时间</th>
+                            <th>开票完成时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyList">
+                        <!-- 动态填充 -->
+                    </tbody>
+                </table>
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/>
+                        <polyline points="13 2 13 9 20 9"/>
+                    </svg>
+                    <p>暂无历史记录</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/history.js"></script>
+</body>
+</html>

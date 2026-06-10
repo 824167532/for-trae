@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置 - 开票待办助手</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <nav class="top-nav">
+            <div class="nav-brand">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    <path d="M9 14l2 2 4-4"/>
+                </svg>
+                <span class="nav-title">开票待办助手</span>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link">待办列表</a>
+                <a href="/history" class="nav-link">历史记录</a>
+                <a href="/settings" class="nav-link active">设置</a>
+            </div>
+        </nav>
+
+        <!-- 主内容区 -->
+        <main class="main-content settings-content">
+            <!-- 根目录设置 -->
+            <section class="settings-section">
+                <h2 class="section-title">根目录设置</h2>
+                <div class="settings-card">
+                    <div class="form-group">
+                        <label class="form-label">根目录路径：</label>
+                        <div class="input-group">
+                            <input type="text" class="form-input" id="rootDirectoryInput" placeholder="例如：D:\资料">
+                            <button class="btn btn-primary" id="saveRootDirBtn">保存</button>
+                        </div>
+                        <p class="form-hint">设置根目录后，截图和发票将保存在此目录下的客户文件夹中</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 客户管理 -->
+            <section class="settings-section">
+                <h2 class="section-title">客户管理</h2>
+                <div class="settings-card">
+                    <div class="customer-actions">
+                        <button class="btn btn-secondary" id="downloadTemplateBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            下载导入模板
+                        </button>
+                        <button class="btn btn-secondary" id="importCustomersBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                            导入客户
+                        </button>
+                        <button class="btn btn-primary" id="addCustomerBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            添加客户
+                        </button>
+                        <input type="file" id="importFileInput" accept=".xlsx" style="display: none;">
+                    </div>
+
+                    <table class="customer-table" id="customerTable">
+                        <thead>
+                            <tr>
+                                <th>客户显示名</th>
+                                <th>相对路径</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerList">
+                            <!-- 动态填充 -->
+                        </tbody>
+                    </table>
+                    <div class="empty-state" id="emptyState" style="display: none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 010 7.75"/>
+                        </svg>
+                        <p>暂无客户，请添加或导入客户</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 添加客户弹窗 -->
+    <div class="modal-overlay" id="addCustomerModal" style="display: none;">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3 class="modal-title">添加客户</h3>
+                <button class="modal-close" id="closeAddCustomerModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form class="upload-form" id="addCustomerForm">
+                    <div class="form-group">
+                        <label class="form-label">客户显示名：</label>
+                        <input type="text" class="form-input" id="customerNameInput" required placeholder="例如：广东移动">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">相对路径：</label>
+                        <input type="text" class="form-input" id="customerPathInput" required placeholder="例如：运营商\移动\广东">
+                        <p class="form-hint">相对于根目录的路径，使用反斜杠分隔</p>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelAddCustomerBtn">取消</button>
+                <button class="btn btn-primary" id="confirmAddCustomerBtn">添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑客户弹窗 -->
+    <div class="modal-overlay" id="editCustomerModal" style="display: none;">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3 class="modal-title">编辑客户</h3>
+                <button class="modal-close" id="closeEditCustomerModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form class="upload-form" id="editCustomerForm">
+                    <div class="form-group">
+                        <label class="form-label">客户显示名：</label>
+                        <input type="text" class="form-input" id="editCustomerNameInput" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">相对路径：</label>
+                        <input type="text" class="form-input" id="editCustomerPathInput" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEditCustomerBtn">取消</button>
+                <button class="btn btn-primary" id="confirmEditCustomerBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导入结果弹窗 -->
+    <div class="modal-overlay" id="importResultModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">导入结果</h3>
+                <button class="modal-close" id="closeImportResultModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="import-result" id="importResult">
+                    <!-- 动态填充 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="closeImportResultBtn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/settings.js"></script>
+</body>
+</html>

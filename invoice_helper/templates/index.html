@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>开票待办助手</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <nav class="top-nav">
+            <div class="nav-brand">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    <path d="M9 14l2 2 4-4"/>
+                </svg>
+                <span class="nav-title">开票待办助手</span>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link active">待办列表</a>
+                <a href="/history" class="nav-link">历史记录</a>
+                <a href="/settings" class="nav-link">设置</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-secondary" id="refreshStatusBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 4v6h-6M1 20v-6h6"/>
+                        <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                    </svg>
+                    刷新状态
+                </button>
+                <button class="btn btn-secondary" id="checkMissingBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                    检查遗漏
+                </button>
+            </div>
+        </nav>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 截图粘贴区 -->
+            <div class="paste-zone" id="pasteZone">
+                <div class="paste-content">
+                    <svg class="paste-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                    <p class="paste-text">点击此区域，然后按 Ctrl+V 粘贴截图</p>
+                    <p class="paste-hint">支持从飞书、微信等应用截取的图片</p>
+                </div>
+            </div>
+
+            <!-- 筛选栏 -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label class="filter-label">发送状态：</label>
+                    <select class="filter-select" id="sendStatusFilter">
+                        <option value="unsent">未发送</option>
+                        <option value="sent">已发送</option>
+                        <option value="all">全部</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">客户：</label>
+                    <select class="filter-select" id="customerFilter">
+                        <option value="">全部客户</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">业务月份：</label>
+                    <input type="month" class="filter-input" id="monthFilter">
+                </div>
+            </div>
+
+            <!-- 待办列表 -->
+            <div class="todo-table-container">
+                <table class="todo-table" id="todoTable">
+                    <thead>
+                        <tr>
+                            <th>客户名</th>
+                            <th>业务月份</th>
+                            <th>金额</th>
+                            <th>开票状态</th>
+                            <th>发送状态</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="todoList">
+                        <!-- 动态填充 -->
+                    </tbody>
+                </table>
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/>
+                        <polyline points="13 2 13 9 20 9"/>
+                    </svg>
+                    <p>暂无待办记录</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 上传弹窗 -->
+    <div class="modal-overlay" id="uploadModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">创建待办</h3>
+                <button class="modal-close" id="closeUploadModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="preview-container">
+                    <img class="preview-image" id="previewImage" alt="截图预览">
+                </div>
+                <form class="upload-form" id="uploadForm">
+                    <div class="form-group">
+                        <label class="form-label">文件名：</label>
+                        <input type="text" class="form-input" id="filenameInput" placeholder="客户名_业务月份_时间戳.png">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">客户：</label>
+                        <select class="form-select" id="customerSelect" required>
+                            <option value="">请选择客户</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">业务月份：</label>
+                        <input type="month" class="form-input" id="monthInput" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">金额（可选）：</label>
+                        <input type="number" class="form-input" id="amountInput" placeholder="输入金额" step="0.01">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelUploadBtn">取消</button>
+                <button class="btn btn-primary" id="confirmUploadBtn">确认创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 重复警告弹窗 -->
+    <div class="modal-overlay" id="duplicateModal" style="display: none;">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3 class="modal-title">警告</h3>
+                <button class="modal-close" id="closeDuplicateModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="warning-content">
+                    <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <p class="warning-text">该客户该月份已存在待办记录，是否继续创建？</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelDuplicateBtn">取消</button>
+                <button class="btn btn-danger" id="confirmDuplicateBtn">继续创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 遗漏客户弹窗 -->
+    <div class="modal-overlay" id="missingModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">当月无开票客户</h3>
+                <button class="modal-close" id="closeMissingModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="missing-list" id="missingList">
+                    <!-- 动态填充 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="closeMissingBtn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑弹窗 -->
+    <div class="modal-overlay" id="editModal" style="display: none;">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3 class="modal-title">编辑待办</h3>
+                <button class="modal-close" id="closeEditModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form class="upload-form" id="editForm">
+                    <div class="form-group">
+                        <label class="form-label">业务月份：</label>
+                        <input type="month" class="form-input" id="editMonthInput">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">金额：</label>
+                        <input type="number" class="form-input" id="editAmountInput" step="0.01">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEditBtn">取消</button>
+                <button class="btn btn-primary" id="confirmEditBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除弹窗 -->
+    <div class="modal-overlay" id="deleteModal" style="display: none;">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3 class="modal-title">删除待办</h3>
+                <button class="modal-close" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="warning-content">
+                    <svg class="warning-icon danger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                    </svg>
+                    <p class="warning-text">确定要删除这条待办记录吗？</p>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="deleteFileCheckbox">
+                        <label for="deleteFileCheckbox">同时删除截图文件</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelDeleteBtn">取消</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
