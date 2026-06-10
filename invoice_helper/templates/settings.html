@@ -25,77 +25,149 @@
         </nav>
 
         <!-- 主内容区 -->
-        <main class="main-content settings-content">
-            <!-- 根目录设置 -->
-            <section class="settings-section">
-                <h2 class="section-title">根目录设置</h2>
-                <div class="settings-card">
-                    <div class="form-group">
-                        <label class="form-label">根目录路径：</label>
-                        <div class="input-group">
-                            <input type="text" class="form-input" id="rootDirectoryInput" placeholder="例如：D:\资料">
-                            <button class="btn btn-primary" id="saveRootDirBtn">保存</button>
+    <main class="main-content settings-content">
+        <!-- 根目录设置 -->
+        <section class="settings-section">
+            <h2 class="section-title">根目录设置</h2>
+            <div class="settings-card">
+                <div class="form-group">
+                    <label class="form-label">根目录路径：</label>
+                    <div class="input-group">
+                        <input type="text" class="form-input" id="rootDirectoryInput" placeholder="例如：D:\资料">
+                        <button class="btn btn-primary" id="saveRootDirBtn">保存</button>
+                    </div>
+                    <p class="form-hint">设置根目录后，截图和发票将保存在此目录下的客户文件夹中</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 文件夹扫描工具 -->
+        <section class="settings-section">
+            <h2 class="section-title">快速扫描文件夹</h2>
+            <div class="settings-card">
+                <p class="form-hint" style="margin-bottom: 16px; font-size: 14px;">
+                    输入您存放客户文件夹的目录路径，系统会自动扫描并列出所有子文件夹，
+                    勾选您想要导入的客户，一键批量导入。
+                </p>
+                <div class="form-group">
+                    <label class="form-label">扫描目录路径：</label>
+                    <div class="input-group">
+                        <input type="text" class="form-input" id="scanDirectoryInput" placeholder="例如：D:\财务资料">
+                        <button class="btn btn-secondary" id="pasteRootDirBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-8.667"/>
+                                <path d="M12 3h5a2 2 0 012 2v5"/>
+                                <path d="M8 14l4 4 8-8"/>
+                            </svg>
+                            使用根目录
+                        </button>
+                        <button class="btn btn-primary" id="scanFoldersBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="M21 21l-4.35-4.35"/>
+                            </svg>
+                            扫描
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 扫描结果区 -->
+                <div id="scanResultSection" style="margin-top: 24px; display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="color: var(--text-primary); font-size: 15px; font-weight: 600;">
+                            扫描到 <span id="scanFolderCount">0</span> 个文件夹
+                        </h3>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary btn-small" id="selectAllFoldersBtn">全选</button>
+                            <button class="btn btn-secondary btn-small" id="deselectAllFoldersBtn">取消全选</button>
+                            <button class="btn btn-primary btn-small" id="importSelectedFoldersBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 010 7.75"/>
+                                </svg>
+                                批量导入选中
+                            </button>
                         </div>
-                        <p class="form-hint">设置根目录后，截图和发票将保存在此目录下的客户文件夹中</p>
+                    </div>
+                    
+                    <div class="scan-table-container" style="border: 1px solid var(--glass-border); border-radius: var(--radius-lg); overflow: hidden; background: rgba(255,255,255,0.3);">
+                        <table class="customer-table" id="scanResultTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;">
+                                        <input type="checkbox" id="selectAllCheckbox" style="cursor: pointer;">
+                                    </th>
+                                    <th>文件夹名称</th>
+                                    <th>相对路径</th>
+                                    <th style="width: 100px;">状态</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scanResultList">
+                                <!-- 动态填充 -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- 客户管理 -->
-            <section class="settings-section">
-                <h2 class="section-title">客户管理</h2>
-                <div class="settings-card">
-                    <div class="customer-actions">
-                        <button class="btn btn-secondary" id="downloadTemplateBtn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                                <polyline points="7 10 12 15 17 10"/>
-                                <line x1="12" y1="15" x2="12" y2="3"/>
-                            </svg>
-                            下载导入模板
-                        </button>
-                        <button class="btn btn-secondary" id="importCustomersBtn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                                <polyline points="17 8 12 3 7 8"/>
-                                <line x1="12" y1="3" x2="12" y2="15"/>
-                            </svg>
-                            导入客户
-                        </button>
-                        <button class="btn btn-primary" id="addCustomerBtn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                            添加客户
-                        </button>
-                        <input type="file" id="importFileInput" accept=".xlsx" style="display: none;">
-                    </div>
-
-                    <table class="customer-table" id="customerTable">
-                        <thead>
-                            <tr>
-                                <th>客户显示名</th>
-                                <th>相对路径</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="customerList">
-                            <!-- 动态填充 -->
-                        </tbody>
-                    </table>
-                    <div class="empty-state" id="emptyState" style="display: none;">
+        <!-- 客户管理 -->
+        <section class="settings-section">
+            <h2 class="section-title">客户管理</h2>
+            <div class="settings-card">
+                <div class="customer-actions">
+                    <button class="btn btn-secondary" id="downloadTemplateBtn">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M23 21v-2a4 4 0 00-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 010 7.75"/>
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
-                        <p>暂无客户，请添加或导入客户</p>
-                    </div>
+                        下载导入模板
+                    </button>
+                    <button class="btn btn-secondary" id="importCustomersBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        导入客户
+                    </button>
+                    <button class="btn btn-primary" id="addCustomerBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        添加客户
+                    </button>
+                    <input type="file" id="importFileInput" accept=".xlsx" style="display: none;">
                 </div>
-            </section>
-        </main>
+
+                <table class="customer-table" id="customerTable">
+                    <thead>
+                        <tr>
+                            <th>客户显示名</th>
+                            <th>相对路径</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerList">
+                        <!-- 动态填充 -->
+                    </tbody>
+                </table>
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                    <p>暂无客户，请添加或导入客户</p>
+                </div>
+            </div>
+        </section>
+    </main>
     </div>
 
     <!-- 添加客户弹窗 -->

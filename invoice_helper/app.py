@@ -18,6 +18,7 @@ from routes.customers import customers_bp
 from routes.todos import todos_bp
 from routes.settings import settings_bp
 from routes.files import files_bp
+from routes.scan import scan_bp
 
 # 初始化Flask应用
 app = Flask(__name__, 
@@ -30,6 +31,7 @@ app.register_blueprint(customers_bp)
 app.register_blueprint(todos_bp)
 app.register_blueprint(settings_bp)
 app.register_blueprint(files_bp)
+app.register_blueprint(scan_bp)
 
 
 @app.route('/api/version')

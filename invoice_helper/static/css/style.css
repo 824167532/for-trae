@@ -1,35 +1,46 @@
-/* 开票待办助手 - 玻璃拟态风格样式表 */
+/* 开票待办助手 - 玻璃拟态风格样式表（温暖奶茶色配色） */
 
-/* 基础变量定义 */
+/* 基础变量定义 - 配色：#EEDAD4（奶茶米）+ #D0E8F4（淡蓝） */
 :root {
+    /* 主色调 */
+    --color-cream: #EEDAD4;      /* 奶茶米色 - 温暖背景 */
+    --color-blue: #D0E8F4;       /* 淡蓝色 - 清新点缀 */
+    
+    /* 衍生色 */
+    --color-cream-dark: #D9C5B8; /* 深奶茶色 */
+    --color-cream-light: #F5E6DE; /* 浅奶茶色 */
+    --color-blue-dark: #A8C8D8;  /* 深蓝色 */
+    --color-blue-light: #E5F2F8; /* 浅蓝色 */
+    
     /* 玻璃拟态颜色 */
-    --glass-bg: rgba(255, 255, 255, 0.15);
-    --glass-bg-hover: rgba(255, 255, 255, 0.25);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-border-strong: rgba(255, 255, 255, 0.5);
+    --glass-bg: rgba(238, 218, 212, 0.25);
+    --glass-bg-hover: rgba(238, 218, 212, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-border-strong: rgba(255, 255, 255, 0.6);
     
-    /* 渐变背景色 */
-    --bg-gradient-start: #667eea;
-    --bg-gradient-mid: #764ba2;
-    --bg-gradient-end: #f093fb;
+    /* 渐变背景色 - 奶茶色 + 淡蓝 */
+    --bg-gradient-start: #EEDAD4;
+    --bg-gradient-mid: #F0DFD5;
+    --bg-gradient-end: #D0E8F4;
     
-    /* 文字颜色 */
-    --text-primary: rgba(255, 255, 255, 0.95);
-    --text-secondary: rgba(255, 255, 255, 0.7);
-    --text-muted: rgba(255, 255, 255, 0.5);
+    /* 文字颜色 - 深棕褐色，温暖易读 */
+    --text-primary: #5C4A3D;
+    --text-secondary: #7A6B5C;
+    --text-muted: #A89B8D;
     
     /* 主题色 */
-    --primary-color: #7b9bff;
-    --primary-hover: #5a7ff0;
-    --success-color: #4ade80;
-    --warning-color: #fbbf24;
-    --danger-color: #f87171;
-    --info-color: #60a5fa;
+    --primary-color: #C9A98A;     /* 暖棕金色 */
+    --primary-hover: #B89770;
+    --primary-light: #E8D5C0;
+    --success-color: #7EB58C;     /* 暖绿色 */
+    --warning-color: #D4A574;     /* 暖橙色 */
+    --danger-color: #D98B7A;      /* 暖红色 */
+    --info-color: #8FA8BC;        /* 暖蓝色 */
     
-    /* 阴影 */
-    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-    --glass-shadow-lg: 0 16px 48px 0 rgba(31, 38, 135, 0.25);
-    --glass-shadow-inset: inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+    /* 阴影 - 柔和棕色阴影 */
+    --glass-shadow: 0 8px 32px 0 rgba(139, 115, 85, 0.15);
+    --glass-shadow-lg: 0 16px 48px 0 rgba(139, 115, 85, 0.2);
+    --glass-shadow-inset: inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
     
     /* 模糊效果 */
     --blur-amount: 12px;
@@ -76,7 +87,7 @@ body::before {
     left: -10%;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(123, 155, 255, 0.3) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(238, 218, 212, 0.6) 0%, transparent 70%);
     border-radius: 50%;
     z-index: -1;
     animation: float1 20s ease-in-out infinite;
@@ -89,7 +100,7 @@ body::after {
     right: -10%;
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(240, 147, 251, 0.25) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(208, 232, 244, 0.5) 0%, transparent 70%);
     border-radius: 50%;
     z-index: -1;
     animation: float2 25s ease-in-out infinite;
@@ -285,7 +296,7 @@ body::after {
     right: 0;
     bottom: 0;
     background: radial-gradient(circle at center, 
-                rgba(123, 155, 255, 0.1) 0%, transparent 70%);
+                rgba(201, 169, 138, 0.15) 0%, transparent 70%);
     opacity: 0;
     transition: opacity 0.3s;
 }
@@ -303,7 +314,7 @@ body::after {
 
 .paste-zone.active {
     border-color: var(--primary-color);
-    background: rgba(123, 155, 255, 0.15);
+    background: rgba(201, 169, 138, 0.15);
 }
 
 .paste-content {
@@ -384,14 +395,14 @@ body::after {
 }
 
 .filter-select option {
-    background: #1e293b;
-    color: white;
+    background: #FAF3EC;
+    color: var(--text-primary);
 }
 
 .filter-select:focus,
 .filter-input:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(123, 155, 255, 0.2);
+    box-shadow: 0 0 0 3px rgba(201, 169, 138, 0.2);
     background: var(--glass-bg-hover);
 }
 
@@ -559,7 +570,7 @@ body::after {
 }
 
 .modal {
-    background: rgba(30, 41, 59, 0.85);
+    background: rgba(250, 243, 236, 0.92);
     backdrop-filter: blur(var(--blur-amount-lg));
     -webkit-backdrop-filter: blur(var(--blur-amount-lg));
     border-radius: var(--radius-xl);
@@ -681,15 +692,15 @@ body::after {
 }
 
 .form-select option {
-    background: #1e293b;
-    color: white;
+    background: #FAF3EC;
+    color: var(--text-primary);
 }
 
 .form-input:focus,
 .form-select:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(123, 155, 255, 0.2);
-    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 3px rgba(201, 169, 138, 0.2);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .form-hint {
@@ -974,8 +985,8 @@ body::after {
 
 /* 选择样式优化 */
 ::selection {
-    background: rgba(123, 155, 255, 0.3);
-    color: white;
+    background: rgba(201, 169, 138, 0.3);
+    color: var(--text-primary);
 }
 
 /* 工具提示 */
@@ -1016,7 +1027,6 @@ input[type="date"] {
 
 input[type="month"]::-webkit-calendar-picker-indicator,
 input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
     cursor: pointer;
     opacity: 0.6;
 }
