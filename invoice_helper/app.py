@@ -34,6 +34,12 @@ app.register_blueprint(files_bp)
 app.register_blueprint(scan_bp)
 
 
+@app.context_processor
+def inject_version():
+    """注入版本号到所有模板（用于CSS/JS缓存清除）"""
+    return {'app_version': get_version()}
+
+
 @app.route('/api/version')
 def get_api_version():
     """返回版本信息API"""

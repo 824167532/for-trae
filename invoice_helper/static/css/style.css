@@ -2,45 +2,45 @@
 
 /* 基础变量定义 - 配色：#EEDAD4（奶茶米）+ #D0E8F4（淡蓝） */
 :root {
-    /* 主色调 */
-    --color-cream: #EEDAD4;      /* 奶茶米色 - 温暖背景 */
-    --color-blue: #D0E8F4;       /* 淡蓝色 - 清新点缀 */
-    
+    /* 主色调 - 奶茶米 + 淡蓝（比原版更明显，v1.1.1增强） */
+    --color-cream: #EEDAD4;
+    --color-blue: #D0E8F4;
+
     /* 衍生色 */
-    --color-cream-dark: #D9C5B8; /* 深奶茶色 */
-    --color-cream-light: #F5E6DE; /* 浅奶茶色 */
-    --color-blue-dark: #A8C8D8;  /* 深蓝色 */
-    --color-blue-light: #E5F2F8; /* 浅蓝色 */
-    
+    --color-cream-dark: #D9C5B8;
+    --color-cream-light: #F5E6DE;
+    --color-blue-dark: #A8C8D8;
+    --color-blue-light: #E5F2F8;
+
     /* 玻璃拟态颜色 */
-    --glass-bg: rgba(238, 218, 212, 0.25);
-    --glass-bg-hover: rgba(238, 218, 212, 0.4);
-    --glass-border: rgba(255, 255, 255, 0.4);
-    --glass-border-strong: rgba(255, 255, 255, 0.6);
-    
-    /* 渐变背景色 - 奶茶色 + 淡蓝 */
-    --bg-gradient-start: #EEDAD4;
-    --bg-gradient-mid: #F0DFD5;
+    --glass-bg: rgba(255, 250, 240, 0.55);
+    --glass-bg-hover: rgba(255, 250, 240, 0.75);
+    --glass-border: rgba(201, 169, 138, 0.35);
+    --glass-border-strong: rgba(201, 169, 138, 0.55);
+
+    /* 渐变背景色 - 奶茶米 + 淡蓝 */
+    --bg-gradient-start: #F5E6DE;
+    --bg-gradient-mid: #EFE3D7;
     --bg-gradient-end: #D0E8F4;
-    
-    /* 文字颜色 - 深棕褐色，温暖易读 */
-    --text-primary: #5C4A3D;
-    --text-secondary: #7A6B5C;
-    --text-muted: #A89B8D;
-    
-    /* 主题色 */
-    --primary-color: #C9A98A;     /* 暖棕金色 */
-    --primary-hover: #B89770;
+
+    /* 文字颜色 - 深棕褐色 */
+    --text-primary: #4A3B2E;
+    --text-secondary: #6B5A4A;
+    --text-muted: #9B8A7A;
+
+    /* 主题色 - 暖棕金色 */
+    --primary-color: #B8885E;
+    --primary-hover: #A57450;
     --primary-light: #E8D5C0;
-    --success-color: #7EB58C;     /* 暖绿色 */
-    --warning-color: #D4A574;     /* 暖橙色 */
-    --danger-color: #D98B7A;      /* 暖红色 */
-    --info-color: #8FA8BC;        /* 暖蓝色 */
-    
+    --success-color: #6BA07C;
+    --warning-color: #C99659;
+    --danger-color: #D97866;
+    --info-color: #7E97AB;
+
     /* 阴影 - 柔和棕色阴影 */
-    --glass-shadow: 0 8px 32px 0 rgba(139, 115, 85, 0.15);
-    --glass-shadow-lg: 0 16px 48px 0 rgba(139, 115, 85, 0.2);
-    --glass-shadow-inset: inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+    --glass-shadow: 0 8px 32px 0 rgba(139, 115, 85, 0.18);
+    --glass-shadow-lg: 0 16px 48px 0 rgba(139, 115, 85, 0.25);
+    --glass-shadow-inset: inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
     
     /* 模糊效果 */
     --blur-amount: 12px;
