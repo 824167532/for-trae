@@ -38,15 +38,24 @@ async function loadHistory() {
     const customerId = document.getElementById('customerFilter').value;
     const businessMonth = document.getElementById('monthFilter').value;
     const sendStatus = document.getElementById('sendStatusFilter').value;
-    
+
     const params = new URLSearchParams();
     if (customerId) params.append('customer_id', customerId);
     if (businessMonth) params.append('business_month', businessMonth);
     if (sendStatus) params.append('send_status', sendStatus);
-    
+
     try {
         const response = await fetch(`/api/todos/history?${params}`);
         const history = await response.json();
+
+        // 从历史数据中提取所有业务月份，去重后按倒序填充下拉框
+        const allMonths = [...new Set(history.map(h => h.business_month))].sort((a, b) => b.localeCompare(a));
+        const monthSelect = document.getElementById('monthFilter');
+        const currentValue = monthSelect.value;
+        monthSelect.innerHTML = '<option value="">全部月份</option>' +
+            allMonths.map(m => `<option value="${m}">${m}</option>`).join('');
+        monthSelect.value = currentValue;
+
         renderHistory(history);
     } catch (error) {
         console.error('加载历史记录失败:', error);

@@ -214,10 +214,9 @@ function showUploadModal(imageData) {
     uploadModal.style.display = 'flex';
 }
 
-// 初始化筛选器（移除了业务月份筛选）
+// 初始化筛选器（点击"应用筛选"按钮才刷新）
 function initFilters() {
-    document.getElementById('sendStatusFilter').addEventListener('change', loadTodos);
-    document.getElementById('customerFilter').addEventListener('change', loadTodos);
+    document.getElementById('applyFilterBtn').addEventListener('click', loadTodos);
 }
 
 // 初始化弹窗

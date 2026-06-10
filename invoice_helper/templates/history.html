@@ -29,9 +29,8 @@
 
         <!-- 主内容区 -->
         <main class="main-content">
-            <!-- 筛选栏 - 增加明确标题，让用户一眼知道功能 -->
+            <!-- 筛选栏 -->
             <div class="filter-bar">
-                <span class="filter-bar-title">🔍 筛选记录</span>
                 <div class="filter-group">
                     <label class="filter-label">客户：</label>
                     <select class="filter-select" id="customerFilter">
@@ -40,7 +39,9 @@
                 </div>
                 <div class="filter-group">
                     <label class="filter-label">业务月份：</label>
-                    <input type="month" class="filter-input" id="monthFilter">
+                    <select class="filter-select" id="monthFilter">
+                        <option value="">全部月份</option>
+                    </select>
                 </div>
                 <div class="filter-group">
                     <label class="filter-label">发送状态：</label>
@@ -50,12 +51,7 @@
                         <option value="sent">已发送</option>
                     </select>
                 </div>
-                <button class="btn btn-secondary" id="applyFilterBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-                    </svg>
-                    应用筛选
-                </button>
+                <button class="btn btn-secondary" id="applyFilterBtn">应用筛选</button>
             </div>
 
             <!-- 历史记录列表 -->
