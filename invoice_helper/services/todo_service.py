@@ -230,12 +230,12 @@ class TodoService:
         updated_count = 0
         
         for todo in pending_todos:
-            has_invoice = file_service.check_invoices_exist(
+            result = file_service.detect_invoice_files(
                 todo['customer_path'],
                 todo['business_month']
             )
             
-            if has_invoice:
+            if result["has_invoice"]:
                 cursor.execute(
                     '''
                     UPDATE todos 
@@ -282,30 +282,33 @@ class TodoService:
         return True
     
     def get_missing_current_month(self):
-        """获取当月无待办的客户"""
+        """获取当月没有开票完成的客户（有未完成待办/完全没有待办都算遗漏）"""
         current_month = datetime.now().strftime('%Y-%m')
-        
+
         conn = get_db_connection()
         cursor = conn.cursor()
-        
+
         # 获取所有客户
         cursor.execute('SELECT id, display_name FROM customers')
         all_customers = cursor.fetchall()
-        
-        # 获取当月有待办的客户
+
+        # 获取当月 invoice_status='done'（已完成开票）的客户
         cursor.execute(
-            'SELECT DISTINCT customer_id FROM todos WHERE business_month = ?',
+            '''
+            SELECT DISTINCT customer_id FROM todos
+            WHERE business_month = ? AND invoice_status = 'done'
+            ''',
             (current_month,)
         )
-        customers_with_todo = [row['customer_id'] for row in cursor.fetchall()]
-        
+        customers_done = [row['customer_id'] for row in cursor.fetchall()]
+
         conn.close()
-        
-        # 返回无待办的客户
+
+        # 没有完成开票的客户算遗漏（有 pending 待办但没完成 / 完全没有待办）
         missing_customers = [
             {'id': row['id'], 'display_name': row['display_name']}
             for row in all_customers
-            if row['id'] not in customers_with_todo
+            if row['id'] not in customers_done
         ]
-        
+
         return missing_customers

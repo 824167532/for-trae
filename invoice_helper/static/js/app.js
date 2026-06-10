@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const now = new Date();
     const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     document.getElementById('monthInput').value = currentMonth;
-    document.getElementById('monthFilter').value = currentMonth;
 });
 
 // 加载客户列表
@@ -71,17 +70,18 @@ function updateCustomerSelects() {
     });
 }
 
-// 加载待办列表
+// 加载待办列表 - 默认只显示当月（按业务月份筛选）
 async function loadTodos() {
     const sendStatus = document.getElementById('sendStatusFilter').value;
     const customerId = document.getElementById('customerFilter').value;
-    const businessMonth = document.getElementById('monthFilter').value;
-    
+    const now = new Date();
+    const businessMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
     const params = new URLSearchParams();
     params.append('send_status', sendStatus);
     if (customerId) params.append('customer_id', customerId);
-    if (businessMonth) params.append('business_month', businessMonth);
-    
+    params.append('business_month', businessMonth);
+
     try {
         const response = await fetch(`/api/todos?${params}`);
         const todos = await response.json();
@@ -214,11 +214,10 @@ function showUploadModal(imageData) {
     uploadModal.style.display = 'flex';
 }
 
-// 初始化筛选器
+// 初始化筛选器（移除了业务月份筛选）
 function initFilters() {
     document.getElementById('sendStatusFilter').addEventListener('change', loadTodos);
     document.getElementById('customerFilter').addEventListener('change', loadTodos);
-    document.getElementById('monthFilter').addEventListener('change', loadTodos);
 }
 
 // 初始化弹窗
