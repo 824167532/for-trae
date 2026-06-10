@@ -1,12 +1,12 @@
 {
-  "version": "1.0.2",
-  "version_name": "开票待办助手 v1.0.2",
+  "version": "1.0.3",
+  "version_name": "开票待办助手 v1.0.3",
   "release_date": "2026-06-10",
-  "codename": "修复macOS启动权限",
+  "codename": "新增文件夹扫描工具",
   "description": "开票待办助手 - 支持Windows和macOS双平台的发票管理工具",
   "release_notes": [
-    "🐛 修复: start.command解压后无执行权限问题",
-    "✨ 新增: 打包脚本自动设置.sh/.command文件执行权限"
+    "✨ 新增: 文件夹扫描工具，批量获取客户路径",
+    "📝 新增: tools目录存放辅助工具脚本"
   ],
   "author": "开票待办助手开发团队",
   "license": "MIT",

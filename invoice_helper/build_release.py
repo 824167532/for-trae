@@ -43,6 +43,7 @@ def get_project_files():
         'services',
         'templates',
         'static',
+        'tools',           # 工具脚本（文件夹扫描等）
     ]
     
     return code_files, directories
