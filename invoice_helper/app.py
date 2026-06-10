@@ -1,6 +1,7 @@
 """
 开票待办助手 - Flask主应用
 支持Windows和macOS双平台
+版本号的唯一真源是 version.json，通过 version_utils.py 读取
 """
 import os
 import sys
@@ -11,7 +12,8 @@ from threading import Timer
 # 添加当前目录到路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, jsonify
+from version_utils import get_version, get_version_name, get_release_date
 from routes.customers import customers_bp
 from routes.todos import todos_bp
 from routes.settings import settings_bp
@@ -28,6 +30,13 @@ app.register_blueprint(customers_bp)
 app.register_blueprint(todos_bp)
 app.register_blueprint(settings_bp)
 app.register_blueprint(files_bp)
+
+
+@app.route('/api/version')
+def get_api_version():
+    """返回版本信息API"""
+    from version_utils import get_version_info
+    return jsonify(get_version_info())
 
 
 @app.route('/')
@@ -83,17 +92,22 @@ if __name__ == '__main__':
     from models import init_db
     init_db()
     
-    # 获取系统信息
+    # 获取系统信息和版本信息
     system_info = get_system_info()
+    version_str = get_version()
+    version_name = get_version_name()
+    release_date = get_release_date()
     
     # 启动信息
     print("=" * 50)
-    print("        开票待办助手")
+    print(f"        {version_name}")
+    print(f"        版本: {version_str}")
+    print(f"        发布日期: {release_date}")
     print("=" * 50)
     print(f"系统平台: {system_info}")
     print(f"Python版本: {platform.python_version()}")
     print(f"服务地址: http://127.0.0.1:5000")
-    print(f"根目录: {os.path.dirname(os.path.abspath(__file__))}")
+    print(f"项目根目录: {os.path.dirname(os.path.abspath(__file__))}")
     print("=" * 50)
     print("按 Ctrl+C 可停止服务")
     print("=" * 50)

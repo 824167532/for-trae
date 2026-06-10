@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "version_name": "开票待办助手 v1.0.0",
+  "release_date": "2026-06-10",
+  "codename": "首版发布",
+  "description": "开票待办助手 - 支持Windows和macOS双平台的发票管理工具",
+  "release_notes": [
+    "🎉 首次发布",
+    "✅ 支持截图粘贴与归档",
+    "✅ 支持客户管理与Excel导入",
+    "✅ 待办状态管理（待开票/已开票/未发送/已发送）",
+    "✅ 打开文件夹功能",
+    "✅ 查重提醒",
+    "✅ 当月遗漏检查",
+    "✅ 历史记录查询",
+    "✅ 玻璃拟态UI设计风格",
+    "✅ 支持Windows和macOS双平台"
+  ],
+  "author": "开票待办助手开发团队",
+  "license": "MIT",
+  "python_version_required": "3.8+",
+  "dependencies": {
+    "flask": ">=2.3.0",
+    "openpyxl": ">=3.1.0"
+  }
+}
