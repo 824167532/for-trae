@@ -17,11 +17,11 @@ async function loadCustomers() {
     try {
         const response = await fetch('/api/customers');
         customers = await response.json();
-        
+
         // 更新客户选择下拉框
         const select = document.getElementById('customerFilter');
         select.innerHTML = '<option value="">全部客户</option>';
-        
+
         customers.forEach(customer => {
             const option = document.createElement('option');
             option.value = customer.id;
@@ -33,11 +33,30 @@ async function loadCustomers() {
     }
 }
 
+// 月份格式标准化：用户输入的 "2026/06" / "2026-06" / "202606" → 后端用 "2026-06"
+function normalizeMonth(input) {
+    if (!input) return '';
+    const s = input.trim();
+    // 2026/06, 2026-06, 2026.06
+    const m1 = s.match(/^(\d{4})[\/\-\.](\d{1,2})$/);
+    if (m1) return `${m1[1]}-${m1[2].padStart(2, '0')}`;
+    // 202606
+    const m2 = s.match(/^(\d{4})(\d{2})$/);
+    if (m2) return `${m2[1]}-${m2[2]}`;
+    return s;
+}
+
 // 加载历史记录
 async function loadHistory() {
     const customerId = document.getElementById('customerFilter').value;
-    const businessMonth = document.getElementById('monthFilter').value;
+    const rawMonth = document.getElementById('monthFilter').value.trim();
     const sendStatus = document.getElementById('sendStatusFilter').value;
+
+    // 用户输入是 yyyy/mm 格式，传给后端前转成 yyyy-mm
+    let businessMonth = '';
+    if (rawMonth) {
+        businessMonth = normalizeMonth(rawMonth);
+    }
 
     const params = new URLSearchParams();
     if (customerId) params.append('customer_id', customerId);
@@ -48,13 +67,14 @@ async function loadHistory() {
         const response = await fetch(`/api/todos/history?${params}`);
         const history = await response.json();
 
-        // 从历史数据中提取所有业务月份，去重后按倒序填充下拉框
-        const allMonths = [...new Set(history.map(h => h.business_month))].sort((a, b) => b.localeCompare(a));
-        const monthSelect = document.getElementById('monthFilter');
-        const currentValue = monthSelect.value;
-        monthSelect.innerHTML = '<option value="">全部月份</option>' +
-            allMonths.map(m => `<option value="${m}">${m}</option>`).join('');
-        monthSelect.value = currentValue;
+        // 从历史数据中提取所有业务月份，统一转成 yyyy/mm 格式，填入 datalist
+        const uniqueMonths = [...new Set(history.map(h => h.business_month))].sort((a, b) => b.localeCompare(a));
+        const datalist = document.getElementById('monthOptions');
+        datalist.innerHTML = '<option value="">全部月份</option>' +
+            uniqueMonths.map(m => {
+                const [y, mm] = m.split('-');
+                return `<option value="${y}/${mm}">`;
+            }).join('');
 
         renderHistory(history);
     } catch (error) {
@@ -66,27 +86,28 @@ async function loadHistory() {
 function renderHistory(history) {
     const tbody = document.getElementById('historyList');
     const emptyState = document.getElementById('emptyState');
-    
+
     if (history.length === 0) {
         tbody.innerHTML = '';
         emptyState.style.display = 'block';
         return;
     }
-    
+
     emptyState.style.display = 'none';
-    
+
     tbody.innerHTML = history.map(item => {
         const sendStatusClass = item.send_status === 'sent' ? 'sent' : 'unsent';
         const sendStatusText = item.send_status === 'sent' ? '已发送' : '未发送';
-        
+
         const amountText = item.amount ? `¥${parseFloat(item.amount).toFixed(2)}` : '-';
         const sentAtText = item.sent_at ? formatDateTime(item.sent_at) : '-';
         const completedAtText = item.completed_at ? formatDateTime(item.completed_at) : '-';
-        
+        const monthDisplay = item.folder_name ? item.folder_name : item.business_month;
+
         return `
             <tr>
                 <td>${item.customer_name}</td>
-                <td>${item.business_month}</td>
+                <td>${monthDisplay}</td>
                 <td>${amountText}</td>
                 <td><span class="status-badge ${sendStatusClass}">${sendStatusText}</span></td>
                 <td>${sentAtText}</td>
@@ -119,9 +140,9 @@ async function openMonthFolder(todoId) {
         const response = await fetch(`/api/todos/history`);
         const history = await response.json();
         const item = history.find(h => h.id === todoId);
-        
+
         if (!item) return;
-        
+
         await fetch('/api/open-folder', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

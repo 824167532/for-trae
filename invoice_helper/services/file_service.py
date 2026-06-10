@@ -97,6 +97,19 @@ class FileService:
 
         return None
 
+    def get_folder_name(self, customer_path, business_month):
+        """
+        返回客户目录下匹配业务月份的文件夹名（只读最后一级目录名）
+
+        输入: customer_path（如 "运营商/移动/广东"），business_month（如 "2026-06"）
+        输出: 文件夹名，如 "202603-202606" / "202606月" / "202606"
+              找不到则返回 business_month
+        """
+        folder_path = self.find_month_folder(customer_path, business_month)
+        if folder_path:
+            return os.path.basename(folder_path)
+        return business_month
+
     # ------------------------------------------------------------------ #
     #  新增: 发票文件判断（v1.1.3）
     #  xml -> 直接是发票

@@ -93,7 +93,19 @@ class TodoService:
         cursor.execute(query, params)
         rows = cursor.fetchall()
         conn.close()
-        return [dict(row) for row in rows]
+
+        records = [dict(row) for row in rows]
+
+        # 对每条记录查找实际的月份文件夹名
+        file_service = self.get_file_service()
+        for rec in records:
+            folder_name = file_service.get_folder_name(
+                rec['customer_path'],
+                rec['business_month']
+            )
+            rec['folder_name'] = folder_name
+
+        return records
     
     def get_by_id(self, todo_id):
         """根据ID获取待办"""
