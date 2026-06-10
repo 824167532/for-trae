@@ -32,8 +32,9 @@ def get_project_files():
         'requirements.txt',
         'README.md',
         'UPGRADE_GUIDE.md',
-        'start.bat',
-        'start.sh',
+        'start.bat',      # Windows 启动脚本
+        'start.sh',       # macOS/Linux 终端启动脚本
+        'start.command',  # macOS 双击启动脚本
     ]
     
     # 需要完整包含的目录（递归）
