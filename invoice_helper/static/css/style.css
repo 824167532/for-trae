@@ -122,16 +122,16 @@ body::after {
     padding: 0;
 }
 
-/* 顶部导航栏 */
+/* 顶部导航栏 - Grid三栏固定布局，确保菜单位置在所有页面一致 */
 .top-nav {
     background: var(--glass-bg);
     backdrop-filter: blur(var(--blur-amount));
     -webkit-backdrop-filter: blur(var(--blur-amount));
     border-bottom: 1px solid var(--glass-border);
     padding: 16px 32px;
-    display: flex;
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
     align-items: center;
-    justify-content: space-between;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -142,6 +142,7 @@ body::after {
     display: flex;
     align-items: center;
     gap: 12px;
+    justify-self: start;
 }
 
 .nav-icon {
@@ -161,6 +162,7 @@ body::after {
 .nav-links {
     display: flex;
     gap: 8px;
+    justify-self: center;
 }
 
 .nav-link {
@@ -186,9 +188,29 @@ body::after {
     box-shadow: var(--glass-shadow);
 }
 
+/* 导航栏右侧操作区 - 左右两栏固定宽度，确保菜单居中不漂移 */
 .nav-actions {
     display: flex;
     gap: 12px;
+    justify-self: end;
+    min-width: 280px;
+    justify-content: flex-end;
+}
+
+/* 筛选栏标题优化 - 明确标识功能区域 */
+.filter-bar-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    padding: 6px 14px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #c9904f 100%);
+    color: #fff;
+    border-radius: var(--radius-md);
+    box-shadow: 0 2px 8px rgba(184, 136, 94, 0.25);
+    white-space: nowrap;
 }
 
 /* 按钮样式 - 玻璃拟态 */
@@ -904,11 +926,28 @@ body::after {
     }
 }
 
+/* 中等屏幕 - 调整导航栏为紧凑Grid布局 */
+@media (max-width: 1100px) {
+    .top-nav {
+        grid-template-columns: 220px 1fr 220px;
+        padding: 16px 20px;
+    }
+    
+    .nav-actions {
+        min-width: 220px;
+    }
+}
+
 @media (max-width: 768px) {
     .top-nav {
+        display: flex;
         flex-direction: column;
         gap: 16px;
         padding: 16px;
+    }
+    
+    .nav-brand {
+        justify-self: center;
     }
     
     .nav-links {
@@ -921,6 +960,7 @@ body::after {
         width: 100%;
         justify-content: center;
         flex-wrap: wrap;
+        min-width: 0;
     }
     
     .main-content {
