@@ -1,20 +1,29 @@
 """
 开票待办助手 - Flask主应用
+支持Windows和macOS双平台
 """
 import os
 import sys
-from flask import Flask, render_template, send_from_directory
+import platform
+import webbrowser
+from threading import Timer
 
 # 添加当前目录到路径
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from models import init_db
-from routes import customers_bp, todos_bp, settings_bp, files_bp
+from flask import Flask, render_template, send_from_directory
+from routes.customers import customers_bp
+from routes.todos import todos_bp
+from routes.settings import settings_bp
+from routes.files import files_bp
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'invoice-helper-secret-key'
+# 初始化Flask应用
+app = Flask(__name__, 
+            template_folder='templates',
+            static_folder='static')
+app.config['SECRET_KEY'] = 'invoice-helper-secret-key-' + str(os.getpid())
 
-# 注册路由
+# 注册蓝图
 app.register_blueprint(customers_bp)
 app.register_blueprint(todos_bp)
 app.register_blueprint(settings_bp)
@@ -41,15 +50,58 @@ def settings():
 
 @app.route('/static/<path:filename>')
 def static_files(filename):
-    """静态文件"""
+    """静态文件服务"""
     return send_from_directory('static', filename)
+
+
+def get_system_info():
+    """获取系统信息"""
+    system = platform.system()
+    release = platform.release()
+    
+    if system == 'Darwin':
+        return f"macOS {release}"
+    elif system == 'Windows':
+        return f"Windows {release}"
+    elif system == 'Linux':
+        return f"Linux {release}"
+    else:
+        return system
+
+
+def open_browser():
+    """自动打开浏览器"""
+    url = 'http://127.0.0.1:5000'
+    try:
+        webbrowser.open(url)
+    except Exception:
+        pass
 
 
 if __name__ == '__main__':
     # 初始化数据库
+    from models import init_db
     init_db()
     
+    # 获取系统信息
+    system_info = get_system_info()
+    
+    # 启动信息
+    print("=" * 50)
+    print("        开票待办助手")
+    print("=" * 50)
+    print(f"系统平台: {system_info}")
+    print(f"Python版本: {platform.python_version()}")
+    print(f"服务地址: http://127.0.0.1:5000")
+    print(f"根目录: {os.path.dirname(os.path.abspath(__file__))}")
+    print("=" * 50)
+    print("按 Ctrl+C 可停止服务")
+    print("=" * 50)
+    print()
+    
+    # 延迟1秒后自动打开浏览器
+    Timer(1.0, open_browser).start()
+    
     # 启动服务
-    print('开票待办助手启动中...')
-    print('请在浏览器访问: http://127.0.0.1:5000')
+    # Windows和macOS都使用默认设置
     app.run(host='127.0.0.1', port=5000, debug=False)
