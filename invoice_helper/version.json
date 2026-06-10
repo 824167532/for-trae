@@ -1,12 +1,12 @@
 {
-  "version": "1.0.1",
-  "version_name": "开票待办助手 v1.0.1",
+  "version": "1.0.2",
+  "version_name": "开票待办助手 v1.0.2",
   "release_date": "2026-06-10",
-  "codename": "macOS双击启动优化",
+  "codename": "修复macOS启动权限",
   "description": "开票待办助手 - 支持Windows和macOS双平台的发票管理工具",
   "release_notes": [
-    "✨ 新增: macOS双击启动脚本(start.command)",
-    "📝 优化: 更清晰的启动脚本说明文档"
+    "🐛 修复: start.command解压后无执行权限问题",
+    "✨ 新增: 打包脚本自动设置.sh/.command文件执行权限"
   ],
   "author": "开票待办助手开发团队",
   "license": "MIT",

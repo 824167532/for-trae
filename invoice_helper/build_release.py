@@ -155,7 +155,26 @@ def create_package():
             if file_path.is_file():
                 # 在 zip 中的路径（相对于 build 目录）
                 arcname = file_path.relative_to(build_dir)
-                zipf.write(str(file_path), arcname=str(arcname))
+                
+                # 创建 ZipInfo 对象以设置权限
+                zip_info = zipfile.ZipInfo(str(arcname))
+                zip_info.compress_type = zipfile.ZIP_DEFLATED
+                
+                # 设置文件权限
+                # .sh 和 .command 文件需要执行权限 (0o755)
+                # 其他文件使用普通权限 (0o644)
+                if file_path.suffix in ('.sh', '.command'):
+                    # 执行权限: rwxr-xr-x (0755)
+                    # Unix 权限存储在 external_attr 的高 16 位
+                    zip_info.external_attr = (0o755 << 16) | 0o100000  # 0o100000 是普通文件标志
+                else:
+                    # 普通权限: rw-r--r-- (0644)
+                    zip_info.external_attr = (0o644 << 16) | 0o100000
+                
+                # 读取文件内容并写入
+                with open(file_path, 'rb') as f:
+                    zipf.writestr(zip_info, f.read())
+                
                 file_count += 1
     
     print(f"  ✓ 已打包 {file_count} 个文件")
