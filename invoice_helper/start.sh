@@ -1,35 +1,35 @@
 #!/bin/bash
+# Invoice Helper - Terminal Launcher
 
-# 开票待办助手 - macOS启动脚本
 echo "========================================"
-echo "  开票待办助手启动程序"
+echo "  Invoice Helper - Terminal Launcher"
 echo "========================================"
 echo ""
 
-# 切换到脚本所在目录
 cd "$(dirname "$0")"
 
-echo "正在检查Python环境..."
+echo "Checking Python environment..."
 if ! command -v python3 &> /dev/null; then
-    echo "[错误] 未检测到Python 3环境，请先安装Python 3.8或更高版本"
-    echo "下载地址: https://www.python.org/downloads/"
+    echo "[ERROR] Python 3 not detected. Please install Python 3.8 or higher."
+    echo "Download: https://www.python.org/downloads/"
     exit 1
 fi
 
-echo "正在检查依赖..."
+echo "Checking dependencies..."
 if ! python3 -c "import flask" &> /dev/null; then
-    echo "正在安装依赖..."
-    pip3 install -r requirements.txt
+    echo "Installing dependencies..."
+    python3 -m pip install --upgrade pip
+    python3 -m pip install -r requirements.txt
     if [ $? -ne 0 ]; then
-        echo "[错误] 依赖安装失败"
+        echo "[ERROR] Failed to install dependencies"
         exit 1
     fi
 fi
 
-echo "正在启动服务..."
+echo "Starting service..."
 echo ""
-echo "请在浏览器访问: http://127.0.0.1:5000"
-echo "按 Ctrl+C 可停止服务"
+echo "Please visit: http://127.0.0.1:5000"
+echo "Press Ctrl+C to stop service"
 echo ""
 
 python3 app.py
