@@ -1,8 +1,8 @@
 {
-  "version": "1.1.8",
-  "version_name": "Invoice Helper v1.1.8",
+  "version": "1.1.9",
+  "version_name": "Invoice Helper v1.1.9",
   "release_date": "2026-06-11",
-  "codename": "Stable Launch Scripts",
+  "codename": "Stable Windows Launcher",
   "description": "开票待办助手 - 支持Windows和macOS双平台的发票管理工具",
   "release_notes": [
     "✨ 新增: 文件夹扫描工具（一键扫描本地目录，批量导入客户）",
@@ -24,7 +24,8 @@
     "🧾 优化(v1.1.6): 解压后保留原 zip 文件不动",
     "🗂️ 修复(v1.1.7): 解压文件名完全保留原始名，不做任何重命名或编码转换",
     "💻 修复(v1.1.8): Windows/macOS启动脚本改用纯英文避免编码问题，增加 pip 升级步骤",
-    "📦 修复(v1.1.8): 启动脚本使用 python -m pip 确保依赖装对环境"
+    "📦 修复(v1.1.8): 启动脚本使用 python -m pip 确保依赖装对环境",
+    "🪟 修复(v1.1.9): Windows start.bat 删除 chcp 65001 避免闪退，改用更稳健的 where python 检测"
   ],
   "author": "开票待办助手开发团队",
   "license": "MIT",
