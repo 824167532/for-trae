@@ -146,10 +146,13 @@ class FileService:
         内部文件规则:
             - .xml -> 发票
             - .pdf/.ofd -> 文件名含 20 位数字 或 含"发票"/"invoice" -> 发票
-        返回: True/False
+        返回: (has_invoice: bool, invoice_inner_names: list)
+            has_invoice: zip 内是否有发票
+            invoice_inner_names: zip 内部被识别为发票的文件名列表（用于后续按需解压）
         """
         try:
             with zipfile.ZipFile(zip_path, 'r') as zf:
+                invoice_names = []
                 for inner_name in zf.namelist():
                     # zipfile 在不同平台对中文文件名编码有差异，做兜底
                     try:
@@ -159,13 +162,70 @@ class FileService:
 
                     # 用原始名和中文兜底名都判断一次，避免漏判
                     if self._is_invoice_file(inner_name):
-                        return True
+                        invoice_names.append(inner_name)
+                        continue
                     if display_name != inner_name and self._is_invoice_file(display_name):
-                        return True
+                        invoice_names.append(inner_name)
 
-            return False
+                return (len(invoice_names) > 0, invoice_names)
         except (zipfile.BadZipFile, PermissionError, OSError):
-            return False
+            return (False, [])
+
+    def _extract_invoice_files_from_zip(self, zip_path, invoice_inner_names):
+        """
+        将 zip 内部的发票文件解压到 zip 同级目录（不建子文件夹）
+
+        输入:
+            zip_path: zip 文件的绝对路径
+            invoice_inner_names: zip 内部需要解压的文件名单（来自 _scan_zip_for_invoice）
+
+        返回: 实际解压出的文件列表（文件名，不含路径）
+
+        行为:
+            - 解压目标 = os.path.dirname(zip_path)（zip 所在目录，同级）
+            - 只解压 invoice_inner_names 里的文件，其他文件不动
+            - 中文文件名编码校正（同 _scan_zip_for_invoice 的 cp437→gbk）
+            - 同名文件覆盖（重复扫描时更新即可）
+            - 原 zip 文件保留不动
+        """
+        if not invoice_inner_names:
+            return []
+
+        target_dir = os.path.dirname(zip_path)
+        extracted = []
+
+        try:
+            with zipfile.ZipFile(zip_path, 'r') as zf:
+                for inner_name in invoice_inner_names:
+                    try:
+                        # 中文文件名编码校正
+                        try:
+                            display_name = inner_name.encode('cp437').decode('gbk')
+                        except (UnicodeEncodeError, UnicodeDecodeError):
+                            display_name = inner_name
+
+                        # 只取最后一级文件名（忽略 zip 内部路径），解压到 target_dir 同级
+                        basename = os.path.basename(display_name) or os.path.basename(inner_name)
+                        if not basename:
+                            continue
+
+                        dest_path = os.path.join(target_dir, basename)
+
+                        # 解压单个文件
+                        with zf.open(inner_name) as src, open(dest_path, 'wb') as dst:
+                            while True:
+                                chunk = src.read(65536)
+                                if not chunk:
+                                    break
+                                dst.write(chunk)
+
+                        extracted.append(basename)
+                    except (KeyError, OSError, zipfile.BadZipFile):
+                        continue
+
+            return extracted
+        except (zipfile.BadZipFile, PermissionError, OSError):
+            return extracted
 
     def detect_invoice_files(self, customer_path, business_month):
         """
@@ -209,8 +269,15 @@ class FileService:
                     continue
 
                 if ext == '.zip':
-                    if self._scan_zip_for_invoice(full_path):
+                    # _scan_zip_for_invoice 现在返回 (has_invoice, invoice_inner_names)
+                    has_zip_invoice, inner_names = self._scan_zip_for_invoice(full_path)
+                    if has_zip_invoice:
+                        # 自动解压到 zip 同级目录，仅解压内部被识别为发票的文件
+                        extracted = self._extract_invoice_files_from_zip(full_path, inner_names)
+                        # 把 zip 本身和解压出的发票文件都记入检测结果
                         invoice_files.append(fname)
+                        for ef in extracted:
+                            invoice_files.append(ef)
 
         # 去重（同一个文件名可能出现在不同子目录）
         unique_files = list(dict.fromkeys(invoice_files))
