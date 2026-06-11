@@ -1,64 +1,75 @@
 @echo off
 REM ============================================================
-REM  Invoice Helper - Windows Launcher
-REM  Double-click this file to run
+REM  Invoice Helper - Launcher
+REM  Priority: 1) embedded python\python.exe (portable)
+REM            2) system python.exe
 REM ============================================================
-
-REM --- Always keep the window open even if something fails ---
-if not "%1"=="" goto :%1
 
 cd /d "%~dp0"
 
-echo ========================================
-echo   Invoice Helper - Windows Launcher
-echo ========================================
-echo.
+REM --- Detect which python to use -----------------------------
+set "PY_EXE="
+if exist "python\python.exe" (
+    set "PY_EXE=python\python.exe"
+    set "PY_MODE=PORTABLE"
+) else (
+    where python >nul 2>&1
+    if not errorlevel 1 (
+        set "PY_EXE=python"
+        set "PY_MODE=SYSTEM"
+    )
+)
 
-echo [Step 1/3] Checking Python...
-where python >nul 2>&1
-if errorlevel 1 (
+if "%PY_EXE%"=="" (
+    echo ========================================
+    echo   Invoice Helper
+    echo ========================================
     echo.
-    echo [ERROR] Python not found in PATH
+    echo [ERROR] Python not found.
     echo.
-    echo Please install Python 3.8 or higher from:
-    echo   https://www.python.org/downloads/
-    echo.
-    echo IMPORTANT: When installing, TICK the box that says
-    echo   "Add Python to PATH"
+    echo You have two options:
+    echo   1) Portable: run "python build_portable.py" on a Windows
+    echo      machine once, then it will create python\ folder.
+    echo      After that, double-click start.bat works on any PC.
+    echo   2) System install: install Python 3.8+ from
+    echo      https://www.python.org/downloads/
+    echo      (remember to tick "Add Python to PATH" during install)
     echo.
     pause
     exit /b 1
 )
-for /f "delims=" %%i in ('python --version 2^>^&1') do echo [OK] Found: %%i
+
+echo ========================================
+echo   Invoice Helper (%PY_MODE%)
+echo ========================================
 echo.
 
-echo [Step 2/3] Checking dependencies...
-python -c "import flask" >nul 2>&1
-if errorlevel 1 (
-    echo Flask not found. Installing dependencies...
-    echo (This may take 1-5 minutes on first run)
-    echo.
-    python -m pip install --upgrade pip
-    python -m pip install -r requirements.txt
+REM --- First-run dependency install (system mode only) ---------
+if "%PY_MODE%"=="SYSTEM" (
+    "%PY_EXE%" -c "import flask" >nul 2>&1
     if errorlevel 1 (
+        echo Flask not found. Installing dependencies...
+        echo (may take 1-5 minutes on first run)
         echo.
-        echo [ERROR] Failed to install dependencies
+        "%PY_EXE%" -m pip install --upgrade pip
+        "%PY_EXE%" -m pip install -r requirements.txt
+        if errorlevel 1 (
+            echo.
+            echo [ERROR] Failed to install dependencies.
+            echo   Please run this command manually in a terminal:
+            echo     cd /d "%~dp0"
+            echo     python -m pip install Flask openpyxl
+            echo.
+            pause
+            exit /b 1
+        )
         echo.
-        echo Please try running these commands in a terminal:
-        echo   cd /d "%~dp0"
-        echo   python -m pip install Flask openpyxl
+        echo [OK] Dependencies installed.
         echo.
-        pause
-        exit /b 1
     )
-    echo.
-    echo [OK] Dependencies installed
-) else (
-    echo [OK] Dependencies found
 )
-echo.
 
-echo [Step 3/3] Starting service...
+echo Starting service...
 echo.
 echo ========================================
 echo   Service started
@@ -76,7 +87,7 @@ echo.
 echo ========================================
 echo.
 
-python app.py
+"%PY_EXE%" app.py
 
 echo.
 echo Server stopped.
