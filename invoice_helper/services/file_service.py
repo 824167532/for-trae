@@ -173,7 +173,7 @@ class FileService:
 
     def _extract_invoice_files_from_zip(self, zip_path, invoice_inner_names):
         """
-        将 zip 内部的发票文件解压到 zip 同级目录（不建子文件夹）
+        将 zip 内部的发票文件解压到 zip 同级目录（不建子文件夹，不改名）
 
         输入:
             zip_path: zip 文件的绝对路径
@@ -184,7 +184,7 @@ class FileService:
         行为:
             - 解压目标 = os.path.dirname(zip_path)（zip 所在目录，同级）
             - 只解压 invoice_inner_names 里的文件，其他文件不动
-            - 中文文件名编码校正（同 _scan_zip_for_invoice 的 cp437→gbk）
+            - 文件名完全保留 zip 内部的原始名，不做任何重命名/编码转换
             - 同名文件覆盖（重复扫描时更新即可）
             - 原 zip 文件保留不动
         """
@@ -198,14 +198,8 @@ class FileService:
             with zipfile.ZipFile(zip_path, 'r') as zf:
                 for inner_name in invoice_inner_names:
                     try:
-                        # 中文文件名编码校正
-                        try:
-                            display_name = inner_name.encode('cp437').decode('gbk')
-                        except (UnicodeEncodeError, UnicodeDecodeError):
-                            display_name = inner_name
-
-                        # 只取最后一级文件名（忽略 zip 内部路径），解压到 target_dir 同级
-                        basename = os.path.basename(display_name) or os.path.basename(inner_name)
+                        # 直接用 zip 内部原始文件名，取最后一级（忽略 zip 内部路径）
+                        basename = os.path.basename(inner_name)
                         if not basename:
                             continue
 
